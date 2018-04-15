@@ -9,7 +9,7 @@
       </tr>
     {% for quest in qs %}
       <tr>
-        <td><a href="#">{{quest.statement}}</a></td>
+        <td><a href="question/{{quest.id}}">{{quest.statement}}</a></td>
         <td>{{quest.poster}}</td>
         <td>{{quest.askDate}}</td>
       </tr>

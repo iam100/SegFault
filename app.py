@@ -63,8 +63,43 @@ def is_loggedin(f):
 
 
 # Redirecting to Home page
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        # Get form fields
+        username = request.form['username']
+        password_candidate = request.form['password']
+
+        # cursor
+        cur = mysql.connection.cursor()
+
+        # Get user by username
+        result = cur.execute("SELECT * FROM users where user_username = %s", [username])
+
+        if result > 0:
+            # Get stored hash
+            data = cur.fetchone()
+            password = data['password']
+
+            # Compare Passwords
+            if sha256_crypt.verify(password_candidate, password):
+                # Correct password
+                session['logged_in'] = True
+                session['username'] = username
+
+                # Flash will flash a message
+                flash('You are now logged in', 'success')
+                return redirect(url_for('dashboard'))
+            else:
+                error = 'Wrong Password'
+                return render_template('home.html', error=error)
+
+            # Close the connection to the database
+            cur.close()
+        else:
+            error = 'Username Not Found'
+            return render_template('home.html', error=error)
+
     return render_template('home.html')
 
 
@@ -213,12 +248,102 @@ def question():
 
 
     qs = cur.fetchall()
-    if result > 0 :
+    if result > 0:
         return render_template('questions.html', qs=qs)
-    else :
+    else:
         msg = "No article found"
         return render_template('questions.html',msg=msg)
     cur.close()
+
+
+# Comment form
+class CommentForm(Form):
+    body = TextAreaField('Comment',[validators.Length(max=80)])
+
+@app.route('/question/<string:id>/',methods = ['GET','POST'])
+def questions(id):
+    form = CommentForm(request.form)
+    if request.method == 'POST' and form.validate():
+        body = form.body.data
+
+        cur = mysql.connection.cursor()
+        print("WORKING")
+        cur.execute("INSERT INTO comments(ansid,body,author) VALUES(%s, %s, %s)",( answer['id'],body, session['username']))
+
+        mysql.connection.commit()
+        cur.close()
+        print("RANDOM SHIT")
+        flash('Comment Posted', 'success')
+        return redirect(url_for('question'))
+
+
+    cur = mysql.connection.cursor()
+
+    if not 'logged_in' in session :
+        username = None
+    else:
+        username = session['username']
+
+    cur.execute("SELECT * FROM questions WHERE id = %s",[id])
+    one_qs = cur.fetchone()
+    cur.close()
+
+    cur = mysql.connection.cursor()
+    auths = cur.execute("SELECT * FROM answers WHERE (author,qid) = (%s,%s)",([session['username']],[id]))
+    cur.close()
+
+    cur2 = mysql.connection.cursor()
+
+    result = cur2.execute("SELECT * FROM answers WHERE qid = %s ORDER BY id DESC",[id])
+    answers = cur2.fetchall()
+    cur2.close()
+
+    comments = []
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM answers WHERE qid = %s ORDER BY id DESC",[id])
+    for row in cur:
+        cur2 = mysql.connection.cursor()
+        cur2.execute("SELECT * FROM comments WHERE ansid = %s",[row['id']])
+        comments.append(cur2.fetchall())
+        cur2.close()
+    cur.close()
+
+
+    if result > 0:
+        return render_template('question.html', form=form, one_qs=one_qs, answers=answers, username=username, auths=auths, comments=comments)
+    else:
+        msg = "Not Answered Yet"
+        return render_template('question.html', form=form, one_qs=one_qs, msg=msg, username=username, auths=auths, comments=comments)
+
+
+class AnswerForm(Form):
+    body = TextAreaField('Your Answer:',[validators.Length(min=5)])
+
+
+@app.route('/addanswer/<string:id>', methods=['GET', 'POST'])
+@is_loggedin
+def addanswer(id):
+    form = AnswerForm(request.form)
+    cur2 = mysql.connection.cursor()
+
+    result = cur2.execute("SELECT * FROM questions WHERE id = %s",[id])
+    one_qs = cur2.fetchone()
+
+    cur2.close()
+
+    if request.method == 'POST' and form.validate():
+        body = form.body.data
+        # Create cursor
+        cur = mysql.connection.cursor()
+
+        cur.execute("INSERT INTO answers(qid,body,author) VALUES(%s, %s, %s)",([id], body, session['username']))
+        mysql.connection.commit()
+        cur.close()
+
+        flash('Question Answered', 'success')
+        return redirect(url_for('dashboard'))
+    return render_template('addanswer.html', form=form ,one_qs=one_qs)
 
 
 # Running the app if app.py is the main module

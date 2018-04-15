@@ -167,3 +167,43 @@ ul.mr-right div a:hover {
 .table-header{
   color: Black;
 }
+
+.oneqs {
+  text-align: center;
+  background-color: White;
+  width: 100%;
+  padding: 1.5%;
+  margin-top: 7.5%;
+  border-radius: 0.5vh;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.centred-answer {
+  background-color: White;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  border-radius: 0.5vh;
+  font-size: 3vh;
+}
+
+.centred-answers {
+  background-color: White;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2%;
+  border-radius: 0.5vh;
+  font-size: 3vh;
+}
+
+.small-txt {
+  font-size: 1.5vh;
+}
+
+.fill-comment {
+  width: 150vh;
+}
