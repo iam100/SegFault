@@ -1,0 +1,213 @@
+body {
+  background-color: #2b3137;
+  font-family: 'Cabin', serif;
+}
+
+.main-background {
+  background-image: url(https://devanshmanu.github.io/foot.png);
+  background-size: cover;
+}
+
+a:active, a:focus {
+  border: none;
+  outline: 0;
+  -moz-outline-style: none;
+}
+
+.navbar-custom {
+  background-color: transparent;
+  color: White;
+  font-size: 3vh;
+}
+
+.welcome-home {
+  color: White;
+  left: 10%;
+  position: absolute;
+  right: 50%;
+  top: 20%;
+  width: 50%;
+}
+.welcome-welcome-home {
+  font-size: 6vh;
+}
+.welcome-home-text {
+  font-size: 2.8vh;
+  left: 5%;
+  padding-right: 1vh;
+  position: absolute;
+}
+
+.home-right {
+  background-color: #cdcac1;
+  border-radius: 0.5vh;
+  left: 65%;
+  position: absolute;
+  top: 20%;
+  transition: 5ms;
+  width: 30%;
+}
+.home-right-text {
+  color: #24292e;
+  font-size: 2.8vh;
+  padding: 1vh;
+}
+
+.about {
+  color: White;
+  font-family: 'Cabin', serif;
+  font-size: 2.8vh;
+  left: 5%;
+  position: absolute;
+  top: 10%;
+  width: 70%;
+}
+.about h1 {
+  font-size: 6vh;
+}
+
+.nav-item-a a {
+  color: White;
+  transition: all ease-in-out 200ms;
+}
+.nav-item-a a:hover {
+  color: #6c757d;
+}
+
+nav a {
+  color: White;
+  transition: all ease-in-out 200ms;
+}
+nav a:hover {
+  color: #6c757d;
+}
+nav li {
+  padding-right: 1.5vh;
+  padding-left: 1.5vh;
+}
+
+ul.mr-right div a {
+  transition: all ease-in-out 200ms;
+}
+ul.mr-right div a:hover {
+  color: #6c757d;
+}
+
+.centred {
+  background-color: White;
+  width: 30%;
+  padding: 1.5%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5%;
+  border-radius: 0.5vh;
+}
+
+.centred-card {
+  background-color: White;
+  width: 30%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10%;
+  border-radius: 0.5vh;
+}
+
+.alert.alert-server {
+  margin-bottom: 0;
+}
+
+.submit {
+  margin-left: 40%;
+  font-size: 2vh;
+}
+.centred-question {
+  background-color: White;
+  width: 60%;
+  padding: 1.5%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 7.5%;
+  border-radius: 0.5vh;
+  height: 40%;
+}
+
+.profile-details {
+  background-color: #cdcac1;
+  border-radius: 0.5vh;
+  left: 10%;
+  position: absolute;
+  top: 20%;
+  width: 30%;
+}
+
+.larger {
+  font-size: 3vh;
+}
+
+.questions1 {
+    background-color: White;
+    width: 80%;
+    padding: 1.5%;
+    border-radius: 0.5vh;
+    margin-top: 7.5%;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 2.3vh;
+}
+
+.questions1-table {
+  background-color: White;
+  width: 100%;
+  padding: 1.5%;
+  border-radius: 0.5vh;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.table-header{
+  color: Black;
+}
+
+.oneqs {
+  text-align: center;
+  background-color: White;
+  width: 100%;
+  padding: 1.5%;
+  margin-top: 7.5%;
+  border-radius: 0.5vh;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.centred-answer {
+  background-color: White;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  border-radius: 0.5vh;
+  font-size: 3vh;
+}
+
+.centred-answers {
+  background-color: White;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2%;
+  border-radius: 0.5vh;
+  font-size: 3vh;
+}
+
+.small-txt {
+  font-size: 1.5vh;
+}
+
+.fill-comment {
+  width: 150vh;
+}
+
+.question-table {
+  margin-left: 10%;
+}

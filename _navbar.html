@@ -1,0 +1,52 @@
+<nav class="navbar-custom navbar navbar-inverse navbar-expand-lg fixed-top">
+  <a class="navbar-brand navbar-custom" href="/">
+    <img src="{{ url_for('static', filename='images/icon.png') }}">
+    <strong>Seg</strong>Fault
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      {% if session.logged_in %}
+        <li class="nav-item active nav-item-a">
+          <a class="nav-link" href="/dashboard">Dashboard<span class="sr-only">(current)</span></a>
+        </li>
+      {% endif %}
+      <li class="nav-item active nav-item-a">
+        <a class="nav-link" href="/questions">Questions</a>
+      </li>
+      {% if session.logged_in %}
+        <li class="nav-item active nav-item-a">
+          <a class="nav-link" href="/addquestion">Ask a Question</a>
+        </li>
+      {% endif %}
+      <li class="nav-item active nav-item-a">
+        <a class="nav-link" href="/about">About</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" value={{request.form.search}}>
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    <ul class="navbar-nav mr-right navbar-right">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        </a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+          {% if session.logged_in %}
+            <a class="dropdown-item" href="/dashboard" role="button">Dashboard</a>
+            <a class="dropdown-item" href="/profile" role="button">Profile</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/logout" role="button" >Logout</a>
+          {% else %}
+            <a class="dropdown-item" href="/login" role="button">Login</a>
+            <a class="dropdown-item" href="/signup" role="button" >Sign Up</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/about">About SegFault</a>
+          {% endif %}
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
