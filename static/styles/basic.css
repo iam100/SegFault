@@ -11,7 +11,7 @@ body {
 a:active, a:focus {
   border: none;
   outline: 0;
-  -moz-outline-style: none
+  -moz-outline-style: none;
 }
 
 .navbar-custom {
@@ -206,4 +206,8 @@ ul.mr-right div a:hover {
 
 .fill-comment {
   width: 150vh;
+}
+
+.question-table {
+  margin-left: 10%;
 }
