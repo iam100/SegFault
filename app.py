@@ -7,7 +7,7 @@ from flask import url_for
 from flask import session
 from flask import logging
 from flask import request
-
+from json import *
 # Imports for MySQL
 from flask_mysqldb import MySQL
 
@@ -67,11 +67,17 @@ def is_loggedin(f):
 # Redirecting to Home page
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT statement FROM questions")
+    friends = []
+    for row in cur:
+        friends.append(row['statement'])
+    print(friends)
+    cur.close()
     if request.method == 'POST':
         # Get form fields
         username = request.form['username']
         password_candidate = request.form['password']
-
         # cursor
         cur = mysql.connection.cursor()
 
@@ -94,15 +100,15 @@ def index():
                 return redirect(url_for('dashboard'))
             else:
                 error = 'Wrong Password'
-                return render_template('home.html', error=error)
+                return render_template('home.html',friends=friends, error=error)
 
             # Close the connection to the database
             cur.close()
         else:
             error = 'Username Not Found'
-            return render_template('home.html', error=error)
+            return render_template('home.html',friends=friends, error=error)
 
-    return render_template('home.html')
+    return render_template('home.html',friends=friends)
 
 
 # Redirecting to the about page
@@ -166,6 +172,23 @@ def profile():
 
     return render_template('profile.html', name=name, email=email, id=id, date=date, no_questions=no_questions, no_answers=no_answers)
 
+
+@app.route('/search',methods = ['GET','POST'])
+def search():
+    strin=request.form['search']
+    results = []
+    results2 = []
+    results3= []
+    cur = mysql.connection.cursor()
+    query  = "'%"+strin+"%'"
+    no = cur.execute("SELECT * FROM questions WHERE statement LIKE "+query)
+    for row in cur:
+        results.append(row)
+    no2 = cur.execute("SELECT * FROM users WHERE user_username LIKE"+query)
+    for row in cur:
+        results2.append(row)
+    cur.close()
+    return render_template("search.html",results=results,results2=results2,no2=no2,no=no)
 # Register page
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -273,11 +296,11 @@ def addquestion():
 def question(id):
     cur = mysql.connection.cursor()
     result = cur.execute("SELECT * FROM questions ORDER BY id DESC")
-    skip = (id-1)*10
-    last = floor(result/10)
+    skip = (id-1)
+    last = floor(result)
     if last == 0:
         last  = 1
-    cur.execute("SELECT * FROM questions ORDER BY id DESC LIMIT %s,%s",(skip,10))
+    cur.execute("SELECT * FROM questions ORDER BY id DESC LIMIT %s,%s",(skip,1))
     qs = cur.fetchall()
     print(last)
     if id > last :
@@ -301,8 +324,8 @@ def answered_question(id):
         answered.append(cur2.fetchone())
         cur2.close()
     result = len(answered)
-    skip = (id-1)*10
-    last = floor(result/10)
+    skip = (id-1)
+    last = floor(result)
     if last == 0:
         last  = 1
     cur.execute("SELECT * FROM answers ORDER BY qid DESC")
@@ -311,7 +334,7 @@ def answered_question(id):
     for row in cur:
         if previd != row['qid']:
             cur2 = mysql.connection.cursor()
-            cur2.execute("SELECT * FROM questions WHERE id = %s LIMIT %s,%s",(row['qid'],skip,10))
+            cur2.execute("SELECT * FROM questions WHERE id = %s LIMIT %s,%s",(row['qid'],skip,1))
             qs.append(cur2.fetchone())
             previd=row['qid']
             cur2.close()
@@ -338,8 +361,8 @@ def unanswered_question(id):
         unanswered.append(cur2.fetchone())
         cur2.close()
     result = len(unanswered)
-    skip = (id-1)*10
-    last = floor(result/10)
+    skip = (id-1)*1
+    last = floor(result)
     if last == 0:
         last  = 1
     cur.execute("SELECT * FROM answers ORDER BY qid DESC")
@@ -347,7 +370,7 @@ def unanswered_question(id):
     previd = ""
     for row in cur:
         cur2 = mysql.connection.cursor()
-        cur2.execute("SELECT * FROM questions WHERE id != %s LIMIT %s,%s",(row['qid'],skip,10))
+        cur2.execute("SELECT * FROM questions WHERE id != %s LIMIT %s,%s",(row['qid'],skip,1))
         qs1.append(cur2.fetchone())
         previd=row['qid']
         cur2.close()

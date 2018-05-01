@@ -25,9 +25,9 @@
         <a class="nav-link" href="/about">About</a>
       </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" value={{request.form.search}}>
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    <form method="post" class="form-inline my-2 my-lg-0" action="/search">
+      <input class="form-control mr-sm-2" name="search" type="search" placeholder="Search" aria-label="Search">
+      <input type="submit" class="btn btn-outline-warning" name="submit" value="Search">
     </form>
     <ul class="navbar-nav mr-right navbar-right">
       <li class="nav-item dropdown">
