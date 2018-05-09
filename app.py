@@ -40,6 +40,7 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql = MySQL(app)
 
 
+
 # Registration Form
 class RegisterForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=50)])
@@ -67,6 +68,17 @@ def is_loggedin(f):
 # Redirecting to Home page
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    cur = mysql.connection.cursor()
+
+    cur.execute("SELECT * FROM questions")
+    cur2  = mysql.connection.cursor()
+    for row in cur:
+        result = cur2.execute("SELECT * FROM answers WHERE qid = %s",[row['id']])
+        if result > 0:
+            cur2.execute("UPDATE questions SET answd = %s WHERE id = %s",(row['id'],[row['id']]))
+            mysql.connection.commit()
+    cur2.close()
+    cur.close()
     friends = []
 
     cur = mysql.connection.cursor()
@@ -331,44 +343,25 @@ def question(id):
 @app.route('/questions/answered',defaults={'id':1})
 @app.route('/questions/answered/<int:id>/')
 def answered_question(id):
-    answered = []
-
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM questions ORDER BY id DESC")
+    result = cur.execute("SELECT * FROM questions WHERE answd != 0 ORDER BY id DESC ")
 
-    for row in cur:
-        cur2 = mysql.connection.cursor()
-        cur2.execute("SELECT statement FROM answers,questions WHERE qid = %s",[row['id']])
-        answered.append(cur2.fetchone())
-        cur2.close()
-
-    result = len(answered)
     skip = (id-1)
     last = floor(result)
 
     if last == 0:
         last  = 1
 
-    cur.execute("SELECT * FROM answers ORDER BY qid DESC")
-    qs = []
-
-    previd = ""
-
-    for row in cur:
-        if previd != row['qid']:
-            cur2 = mysql.connection.cursor()
-            cur2.execute("SELECT * FROM questions WHERE id = %s LIMIT %s,%s",(row['qid'],skip,1))
-            qs.append(cur2.fetchone())
-            previd=row['qid']
-            cur2.close()
+    cur.execute("SELECT * FROM questions WHERE answd != 0 ORDER BY id DESC LIMIT %s,%s",(skip,1))
+    qs = cur.fetchall()
 
     if id > last :
         return redirect(url_for('answered_question',id = last))
     if result > 0:
-        return render_template('answered_questions.html',last=last, qs=qs,id=id,answered=answered)
+        return render_template('answered_questions.html',last=last, qs=qs,id=id)
     else:
         msg = "No questions found"
-        return render_template('answered_questions.html',msg=msg,id=id,answered=answered)
+        return render_template('answered_questions.html',msg=msg,id=id)
 
     cur.close()
 
@@ -376,46 +369,28 @@ def answered_question(id):
 @app.route('/questions/unanswered',defaults={'id':1})
 @app.route('/questions/unanswered/<int:id>/')
 def unanswered_question(id):
-    unanswered = []
-
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM questions ORDER BY id DESC")
+    result = cur.execute("SELECT * FROM questions WHERE answd = 0 ORDER BY id DESC ")
 
-    for row in cur:
-        cur2 = mysql.connection.cursor()
-        cur2.execute("SELECT statement FROM answers,questions WHERE qid != %s",[row['id']])
-        unanswered.append(cur2.fetchone())
-        cur2.close()
-
-    result = len(unanswered)
-    skip = (id-1)*1
+    skip = (id-1)
     last = floor(result)
 
     if last == 0:
         last  = 1
 
-    cur.execute("SELECT * FROM answers ORDER BY qid DESC")
-    qs1 = []
-    previd = ""
-
-    for row in cur:
-        cur2 = mysql.connection.cursor()
-        cur2.execute("SELECT * FROM questions WHERE id != %s LIMIT %s,%s",(row['qid'],skip,1))
-        qs1.append(cur2.fetchone())
-        previd=row['qid']
-        cur2.close()
-
-    qs = list({v['id']:v for v in qs1}.values())
+    cur.execute("SELECT * FROM questions WHERE answd = 0 ORDER BY id DESC LIMIT %s,%s",(skip,1))
+    qs = cur.fetchall()
 
     if id > last :
         return redirect(url_for('unanswered_question',id = last))
     if result > 0:
-        return render_template('unanswered_questions.html',last=last, qs=qs,id=id,unanswered=unanswered)
+        return render_template('unanswered_questions.html',last=last, qs=qs,id=id)
     else:
         msg = "No questions found"
-        return render_template('unanswered_questions.html',msg=msg,id=id,unanswered=unanswered)
+        return render_template('unanswered_questions.html',msg=msg,id=id)
 
     cur.close()
+
 
 
 @app.route('/editquestion/<string:id>',methods = ['GET','POST'])
@@ -605,7 +580,7 @@ def addanswer(id):
     form = AnswerForm(request.form)
     cur2 = mysql.connection.cursor()
 
-    result = cur2.execute("SELECT * FROM questions WHERE id = %s",[id])
+    cur2.execute("SELECT * FROM questions WHERE id = %s",[id])
     one_qs = cur2.fetchone()
 
     cur2.close()
